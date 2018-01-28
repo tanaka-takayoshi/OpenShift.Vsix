@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -63,8 +64,43 @@ namespace OpenShiftForVisualStudio.Vsix
         {
             base.Initialize();
             OpenShiftForVisualStudio.Vsix.Views.OpenShiftProjectWindowCommand.Initialize(this);
+            OpenShiftForVisualStudio.Vsix.DeployToOpenShiftCommand.Initialize(this);
         }
 
         #endregion
+
+        static OpenShiftVSPackage()
+        {
+            RedirectAssembly("System.Reactive.Core", new Version(3, 0, 3000, 0), "94bc3704cddfc263");
+            RedirectAssembly("System.Reactive.Interfaces", new Version(3, 0, 1000, 0), "94bc3704cddfc263");
+        }
+
+        public static void RedirectAssembly(string shortName, Version targetVersion, string publicKeyToken)
+        {
+            ResolveEventHandler handler = null;
+
+            handler = (sender, args) => {
+                // Use latest strong name & version when trying to load SDK assemblies
+                var requestedAssembly = new AssemblyName(args.Name);
+                if (requestedAssembly.Name != shortName)
+                    return null;
+
+                Debug.WriteLine($"Redirecting assembly load of {args.Name}, loaded by {args.RequestingAssembly?.FullName ?? "(unknown)"}");
+                
+                if (requestedAssembly.Version > targetVersion)
+                {
+                    Debug.WriteLine($"Request assemby's version {requestedAssembly.Version} is higher than the target version {targetVersion}. Stop to load the target assembly.");
+                    return null;
+                }
+                requestedAssembly.Version = targetVersion;
+                requestedAssembly.SetPublicKeyToken(new AssemblyName($"x, PublicKeyToken={publicKeyToken}").GetPublicKeyToken());
+                requestedAssembly.CultureInfo = CultureInfo.InvariantCulture;
+
+                AppDomain.CurrentDomain.AssemblyResolve -= handler;
+
+                return Assembly.Load(requestedAssembly);
+            };
+            AppDomain.CurrentDomain.AssemblyResolve += handler;
+        }
     }
 }
