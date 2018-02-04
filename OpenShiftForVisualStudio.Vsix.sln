@@ -5,15 +5,19 @@ VisualStudioVersion = 15.0.27102.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenShift.DotNet", "..\OpenShift.DotNet\OpenShift.DotNet\OpenShift.DotNet.csproj", "{3F3E8EFF-886C-4228-9257-AA7B2AFA43A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenShift.DotNetStandard", "OpenShift.DotNetStandard\OpenShift.DotNetStandard.csproj", "{298F34C5-A81B-48EC-9A42-791F5D8EF690}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenShift.DotNetStandard", "OpenShift.DotNetStandard\OpenShift.DotNetStandard.csproj", "{298F34C5-A81B-48EC-9A42-791F5D8EF690}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sandbox", "Sandbox", "{DD449D4E-2CD3-4F4E-BEDF-60A645200F3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenShift.DotNetCore.ConsoleSandbox", "OpenShift.DotNetCore.ConsoleSandbox\OpenShift.DotNetCore.ConsoleSandbox.csproj", "{EF97DE56-EA40-4844-ADEC-DFD6665F6538}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenShift.DotNetCore.ConsoleSandbox", "OpenShift.DotNetCore.ConsoleSandbox\OpenShift.DotNetCore.ConsoleSandbox.csproj", "{EF97DE56-EA40-4844-ADEC-DFD6665F6538}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenShift.OpenAPI2CSharpHotFix", "OpenShift.OpenAPI2CSharpHotFix\OpenShift.OpenAPI2CSharpHotFix.csproj", "{5F6702DB-28F1-4500-97F8-90B38BB5CEEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenShift.OpenAPI2CSharpHotFix", "OpenShift.OpenAPI2CSharpHotFix\OpenShift.OpenAPI2CSharpHotFix.csproj", "{5F6702DB-28F1-4500-97F8-90B38BB5CEEA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenShiftForVisualStudio.Vsix", "OpenShiftForVisualStudio.Vsix\OpenShiftForVisualStudio.Vsix.csproj", "{0137C971-8321-432F-9A51-64E19550D96F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenShift.DotNet.Service.Netfx", "OpenShift.DotNet.Service.Netfx\OpenShift.DotNet.Service.Netfx.csproj", "{49B65375-6EBA-4238-9E6D-5C800E7987BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenShift.DotNet.Service", "OpenShift.DotNet.Service\OpenShift.DotNet.Service.csproj", "{88C02C52-0487-4B80-99EF-3074FEBD1F2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,12 +45,21 @@ Global
 		{0137C971-8321-432F-9A51-64E19550D96F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0137C971-8321-432F-9A51-64E19550D96F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0137C971-8321-432F-9A51-64E19550D96F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B65375-6EBA-4238-9E6D-5C800E7987BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B65375-6EBA-4238-9E6D-5C800E7987BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B65375-6EBA-4238-9E6D-5C800E7987BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B65375-6EBA-4238-9E6D-5C800E7987BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88C02C52-0487-4B80-99EF-3074FEBD1F2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88C02C52-0487-4B80-99EF-3074FEBD1F2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88C02C52-0487-4B80-99EF-3074FEBD1F2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88C02C52-0487-4B80-99EF-3074FEBD1F2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3F3E8EFF-886C-4228-9257-AA7B2AFA43A0} = {DD449D4E-2CD3-4F4E-BEDF-60A645200F3A}
+		{298F34C5-A81B-48EC-9A42-791F5D8EF690} = {DD449D4E-2CD3-4F4E-BEDF-60A645200F3A}
 		{EF97DE56-EA40-4844-ADEC-DFD6665F6538} = {DD449D4E-2CD3-4F4E-BEDF-60A645200F3A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

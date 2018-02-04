@@ -80,7 +80,7 @@
         <Parent guid="guidOpenShiftVSPackageCmdSet1" id="MyMenuGroup" />
         <Icon guid="guidImages1" id="bmpPic1" />
         <Strings>
-          <ButtonText>Invoke DeployToOpenShiftCommand</ButtonText>
+          <ButtonText>Deploy to OpenShift</ButtonText>
         </Strings>
       </Button>
     </Buttons>

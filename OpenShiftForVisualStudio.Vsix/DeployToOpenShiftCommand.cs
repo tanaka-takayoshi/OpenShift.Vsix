@@ -89,20 +89,13 @@ namespace OpenShiftForVisualStudio.Vsix
         /// <param name="e">Event args.</param>
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            //string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            //string title = "DeployToOpenShiftCommand";
+            var assembly = typeof(OpenShift.DotNet.Service.OpenShiftAPIwithKubernetes).Assembly;
+            Console.WriteLine($"{assembly.Location} {assembly.FullName}");
 
-            //// Show a message box to prove we were here
-            //VsShellUtilities.ShowMessageBox(
-            //    this.ServiceProvider,
-            //    message,
-            //    title,
-            //    OLEMSGICON.OLEMSGICON_INFO,
-            //    OLEMSGBUTTON.OLEMSGBUTTON_OK,
-            //    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-            var dialog = new DeployToOpenShiftWindow("Microsoft.VisualStudio.PlatformUI.DialogWindow");
-            dialog.HasMinimizeButton = false;
-            dialog.HasMaximizeButton = false;
+            var dialog = new DeployToOpenShiftWindow("openshift by SDK")
+            {
+                HasMaximizeButton = true
+            };
             dialog.ShowModal();
 
         }

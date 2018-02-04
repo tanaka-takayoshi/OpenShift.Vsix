@@ -14,8 +14,50 @@
         <vm:DeployToOpenShiftViewModel/>
     </platformUi:DialogWindow.DataContext>
     <Grid>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="191,88,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Title.Value}"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="191,128,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Message.Value}"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="213,196,0,0" VerticalAlignment="Top" Width="75" Command="{Binding DeployCommand}"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="300*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Label Content="Master Url"/>
+        <TextBox Grid.Column="1" Height="23" Text="{Binding OpenShiftMasterUrl.Value, Mode=OneWay}" IsReadOnly="True"/>
+
+        <Label Grid.Row="1" Content="Project"/>
+        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Projects}" SelectedItem="{Binding SelectedNameSpace.Value}"/>
+
+        <Label Grid.Row="2" Content="Name"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Height="23" Text="{Binding Name.Value}" />
+
+        <Label Grid.Row="3" Content="Host"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Height="23" Text="{Binding Host.Value}" />
+
+        <Label Grid.Row="4" Content="MemoryLimit"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Height="23" Text="{Binding MemoryLimit.Value}" />
+
+        <Label Grid.Row="5" Content="GitSource"/>
+        <TextBox Grid.Row="5" Grid.Column="1" Height="23" Text="{Binding GitSource.Value}" />
+
+        <Label Grid.Row="6" Content="GitRef"/>
+        <TextBox Grid.Row="6" Grid.Column="1" Height="23" Text="{Binding GitRef.Value}" />
+
+        <Label Grid.Row="7" Content="StartupProject"/>
+        <TextBox Grid.Row="7" Grid.Column="1" Height="23" Text="{Binding StartupProject.Value}" />
+        
+        <Button Grid.Row="8" Grid.Column="1" Content="Create" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Command="{Binding DeployCommand}"/>
+
+        <ProgressBar Grid.Row="9" Grid.Column="1" IsIndeterminate="{Binding IsDeploying.Value}"/>
+        <TextBox Grid.Row="10" Grid.Column="1" Height="Auto" Text="{Binding Message.Value, Mode=OneWay}" TextWrapping="WrapWithOverflow" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible" IsReadOnly="True"/>
     </Grid>
 </platformUi:DialogWindow>

@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 
 namespace OpenShift.OpenAPI2CSharpHotFix
 {
@@ -10,7 +11,9 @@ namespace OpenShift.OpenAPI2CSharpHotFix
     {
         static void Main(string[] args)
         {
-            var jobj = JsonConvert.DeserializeObject(File.ReadAllText(@"D:\Downloads\openshift-openapi-spec.json")) as JObject;
+            var client = new HttpClient();
+            var json = client.GetStringAsync("https://raw.githubusercontent.com/openshift/origin/master/api/swagger-spec/openshift-openapi-spec.json").GetAwaiter().GetResult();
+            var jobj = JsonConvert.DeserializeObject(json) as JObject;
             //jobj.Dump();
             var produces = jobj.SelectTokens("$..produces");
             void RemoveAster(System.Collections.Generic.IEnumerable<JToken> tokens)
@@ -48,6 +51,11 @@ namespace OpenShift.OpenAPI2CSharpHotFix
                 }
             }
             //jobj.Dump();
+            //deleteするとresponseがdeleteしたオブジェクト
+
+            //Iok8sapicorev1ServicePortのTargetPortはintかstring
+            //Iok8sapicorev1HTTPGetActionのPort
+
             File.WriteAllText(@"D:\Downloads\openshift-openapi-spec3.json", JsonConvert.SerializeObject(jobj));
         }
         

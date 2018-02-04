@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -73,6 +74,8 @@ namespace OpenShiftForVisualStudio.Vsix
         {
             RedirectAssembly("System.Reactive.Core", new Version(3, 0, 3000, 0), "94bc3704cddfc263");
             RedirectAssembly("System.Reactive.Interfaces", new Version(3, 0, 1000, 0), "94bc3704cddfc263");
+            //RedirectAssembly("Newtonsoft.Json", new Version(10, 0, 0, 0), "30ad4fe6b2a6aeed");
+            //RedirectAssembly("System.Reactive.Core", new Version(4, 1, 1, 2), "b03f5f7f11d50a3a");
         }
 
         public static void RedirectAssembly(string shortName, Version targetVersion, string publicKeyToken)
@@ -101,6 +104,22 @@ namespace OpenShiftForVisualStudio.Vsix
                 return Assembly.Load(requestedAssembly);
             };
             AppDomain.CurrentDomain.AssemblyResolve += handler;
+        }
+    }
+
+    public static class TaskEx
+    {
+        
+
+        /// <summary>
+        /// 投げっぱなしにする場合は、これを呼ぶことでコンパイラの警告の抑制と、例外発生時のロギングを行います。
+        /// </summary>
+        public static void FireAndForget(this System.Threading.Tasks.Task task)
+        {
+            task.ContinueWith(x =>
+            {
+                //logger.ErrorException("TaskUnhandled", x.Exception);
+            }, TaskContinuationOptions.OnlyOnFaulted);
         }
     }
 }
