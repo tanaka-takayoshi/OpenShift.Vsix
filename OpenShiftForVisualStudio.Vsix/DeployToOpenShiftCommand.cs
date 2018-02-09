@@ -89,8 +89,7 @@ namespace OpenShiftForVisualStudio.Vsix
         /// <param name="e">Event args.</param>
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            var assembly = typeof(OpenShift.DotNet.Service.OpenShiftAPIwithKubernetes).Assembly;
-            Console.WriteLine($"{assembly.Location} {assembly.FullName}");
+            
 
             var dialog = new DeployToOpenShiftWindow("openshift by SDK")
             {

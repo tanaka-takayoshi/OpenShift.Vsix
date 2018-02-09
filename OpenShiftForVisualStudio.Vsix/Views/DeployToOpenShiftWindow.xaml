@@ -31,8 +31,18 @@
             <RowDefinition Height="50"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Label Content="Master Url"/>
-        <TextBox Grid.Column="1" Height="23" Text="{Binding OpenShiftMasterUrl.Value, Mode=OneWay}" IsReadOnly="True"/>
+        <Label Content="OpenShift Master endpoint"/>
+        <ComboBox Grid.Column="1" ItemsSource="{Binding Masters}" SelectedItem="{Binding SelectedMaster.Value}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name.Value}"/>
+                        <TextBlock Text=" : "/>
+                        <TextBlock Text="{Binding Endpoint.Value}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
         <Label Grid.Row="1" Content="Project"/>
         <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Projects}" SelectedItem="{Binding SelectedNameSpace.Value}"/>

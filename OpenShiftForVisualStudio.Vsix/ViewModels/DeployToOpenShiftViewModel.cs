@@ -4,8 +4,10 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,13 +19,24 @@ namespace OpenShiftForVisualStudio.Vsix.ViewModels
 
         private DeployToOpenShiftModel model = new DeployToOpenShiftModel();
 
-        public ReadOnlyReactivePropertySlim<string> OpenShiftMasterUrl { get; }
-        public ReactiveCollection<string> Projects { get; }
+        public ReadOnlyReactiveCollection<OpenShiftMasterViewModel> Masters { get; }
+        public ReactivePropertySlim<OpenShiftMasterViewModel> SelectedMaster { get; }
+        
+        public ReadOnlyReactiveCollection<string> Projects { get; }
         public ReactiveProperty<string> SelectedNameSpace { get; }
+
+        [RegularExpression(@"[a-z-\.]{1,253}")]
+        [Required]
         public ReactiveProperty<string> Name { get; }
+
+        [Required]
         public ReactiveProperty<string> Host { get; }
+
+        [Required]
         public ReactiveProperty<string> MemoryLimit { get; }
+        [Required]
         public ReactiveProperty<string> GitSource { get; }
+        [Required]
         public ReactiveProperty<string> GitRef { get; }
         public ReactiveProperty<string> StartupProject { get; }
 
@@ -36,11 +49,15 @@ namespace OpenShiftForVisualStudio.Vsix.ViewModels
 
         public DeployToOpenShiftViewModel()
         {
-            OpenShiftMasterUrl = model.OpenShiftMasterUrl.ToReadOnlyReactivePropertySlim();
-            Projects = new ReactiveCollection<string>
-            {
-                model.SelectedNameSpace.Value
-            };
+            Masters = model.Masters.ToReadOnlyReactiveCollection(m => new OpenShiftMasterViewModel(m));
+            SelectedMaster = new ReactivePropertySlim<OpenShiftMasterViewModel>();
+            SelectedMaster
+                .Where(x => x != null)
+                .Subscribe(x => model.SelectedMaster.Value = x.Model)
+                .AddTo(Disposable);
+
+            Projects = model.Projects.ToReadOnlyReactiveCollection();
+            SelectedNameSpace = model.SelectedProject.ToReactivePropertyAsSynchronized(x => x.Value);
 
             Name = model.Name
                 .ToReactiveProperty()
@@ -76,11 +93,12 @@ namespace OpenShiftForVisualStudio.Vsix.ViewModels
 
             Message = model.Message.ToReadOnlyReactivePropertySlim();
 
-            DeployCommand = new ReactiveCommand()
-            .WithSubscribe(() =>
-            {
-                model.StartDeploy();
-            });
+            DeployCommand = SelectedMaster.Select(s => s != null)
+                .ToReactiveCommand()
+                .WithSubscribe(() =>
+                {
+                    model.StartDeploy();
+                });
         }
 
         public void Dispose()

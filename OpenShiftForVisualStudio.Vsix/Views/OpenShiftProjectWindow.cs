@@ -5,6 +5,7 @@
     using System.Runtime.InteropServices;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
+    using OpenShiftForVisualStudio.Vsix.ViewModels;
 
     /// <summary>
     /// This class implements the tool window exposed by this package and hosts a user control.
@@ -33,8 +34,13 @@
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            control = new OpenShiftProjectWindowControl();
+            var vm = new OpenShiftExplorerViewModel();
+            control = new OpenShiftProjectWindowControl()
+            {
+                DataContext = vm
+            };
             this.Content = control;
+            vm.LoadAsync().FireAndForget();
 
             this.ToolBar = new CommandID(OpenShiftProjectWindowCommand.CommandSet,
                     OpenShiftProjectWindowCommand.ToolbarID);

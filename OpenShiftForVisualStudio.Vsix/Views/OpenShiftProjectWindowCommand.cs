@@ -1,8 +1,11 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.Globalization;
+using System.Windows;
+using System.Windows.Controls;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using OpenShiftForVisualStudio.Vsix.ViewModels;
 
 namespace OpenShiftForVisualStudio.Vsix.Views
 {
@@ -81,6 +84,8 @@ namespace OpenShiftForVisualStudio.Vsix.Views
             Instance = new OpenShiftProjectWindowCommand(package);
         }
 
+        private OpenShiftExplorerViewModel vm;
+
         /// <summary>
         /// Shows the tool window when the menu item is clicked.
         /// </summary>
@@ -96,7 +101,11 @@ namespace OpenShiftForVisualStudio.Vsix.Views
             {
                 throw new NotSupportedException("Cannot create tool window");
             }
-
+            vm = (window.Content as FrameworkElement).DataContext as OpenShiftExplorerViewModel;
+            if (vm == null)
+            {
+                throw new NotSupportedException("Cannot allocate a proper ViewModel");
+            }
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
 
@@ -111,9 +120,6 @@ namespace OpenShiftForVisualStudio.Vsix.Views
             }
         }
 
-        private void ButtonHandler(object sender, EventArgs arguments)
-        {
-
-        }
+        private void ButtonHandler(object sender, EventArgs arguments) => vm.LoadAsync().FireAndForget();
     }
 }

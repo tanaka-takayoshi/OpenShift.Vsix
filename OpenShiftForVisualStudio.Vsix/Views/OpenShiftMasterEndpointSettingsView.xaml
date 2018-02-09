@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="OpenShiftForVisualStudio.Vsix.Views.OpenShiftMasterEndpointSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OpenShiftForVisualStudio.Vsix.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Master endpoints:"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Margin="5,0,5,0" Content="Add"  Command="{Binding AddItemCommand}"/>
+                <Button Margin="5,0,5,0" Content="Remove" Command="{Binding RemoveItemCommand}"/>
+            </StackPanel>
+        </Grid>
+        <ListBox x:Name="masterEndpointList" Grid.Row="1" ItemsSource="{Binding Masters}" SelectedItem="{Binding SelectedItem.Value, Mode=TwoWay}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name.Value}"/>
+                        <TextBlock Text=":"/>
+                        <TextBlock Text="{Binding Endpoint.Value}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Margin="5" Content="Name:"/>
+            <TextBox Margin="5" Grid.Column="1" Text="{Binding SelectedItem.Name.Value, ElementName=masterEndpointList}"/>
+
+            <Label Margin="5" Grid.Row="1" Content="endpoint:"/>
+            <TextBox Margin="5" Grid.Row="1" Grid.Column="1" Text="{Binding SelectedItem.Endpoint.Value, ElementName=masterEndpointList}"/>
+
+            <Label Margin="5" Grid.Row="2" Content="Token:"/>
+            <TextBox Margin="5" Grid.Row="2" Grid.Column="1" Text="{Binding SelectedItem.Token.Value, ElementName=masterEndpointList}"/>
+        </Grid>
+    </Grid>
+</UserControl>

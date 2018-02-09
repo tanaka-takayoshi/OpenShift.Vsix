@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
+using OpenShiftForVisualStudio.Vsix.Options;
 
 namespace OpenShiftForVisualStudio.Vsix
 {
@@ -37,6 +38,8 @@ namespace OpenShiftForVisualStudio.Vsix
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(OpenShiftForVisualStudio.Vsix.Views.OpenShiftProjectWindow))]
+    //[ProvideProfile(typeof(AvaloniaDesignerGeneralPage), "Avalonia designer", "Avalonia Designer Options", 289, 289, true, DescriptionResourceID = 114)]
+    [ProvideOptionPage(typeof(OpenShiftMasterEndpointSetting), "OpenShift Tools for Visual Studio", "Master endpoints", 0, 0, true)]
     public sealed class OpenShiftVSPackage : Package
     {
         /// <summary>
@@ -69,7 +72,7 @@ namespace OpenShiftForVisualStudio.Vsix
         }
 
         #endregion
-
+        
         static OpenShiftVSPackage()
         {
             RedirectAssembly("System.Reactive.Core", new Version(3, 0, 3000, 0), "94bc3704cddfc263");
@@ -109,8 +112,6 @@ namespace OpenShiftForVisualStudio.Vsix
 
     public static class TaskEx
     {
-        
-
         /// <summary>
         /// 投げっぱなしにする場合は、これを呼ぶことでコンパイラの警告の抑制と、例外発生時のロギングを行います。
         /// </summary>
@@ -118,8 +119,10 @@ namespace OpenShiftForVisualStudio.Vsix
         {
             task.ContinueWith(x =>
             {
+                Debug.Write(x.Exception);
                 //logger.ErrorException("TaskUnhandled", x.Exception);
             }, TaskContinuationOptions.OnlyOnFaulted);
         }
     }
+    
 }

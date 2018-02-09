@@ -1,4 +1,7 @@
-﻿using Microsoft.Rest;
+﻿using EnvDTE;
+using EnvDTE80;
+using Microsoft.Rest;
+using Microsoft.VisualStudio.Shell;
 using OpenShift.DotNet.Service;
 using OpenShift.DotNet.Service.Models;
 using Reactive.Bindings;
@@ -8,19 +11,39 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
+using System.Reactive.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace OpenShiftForVisualStudio.Vsix.Models
 {
     class DeployToOpenShiftModel
     {
+        private static DTE2 _dte;
+
+        internal static DTE2 DTE
+        {
+            get
+            {
+                if (_dte == null)
+                {
+                    _dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE2;
+                }
+
+                return _dte;
+            }
+        }
+
         private OpenShiftAPIwithKubernetes client;
 
-        //TODOあとで選択可能に
-        internal ReactivePropertySlim<string> OpenShiftMasterUrl { get; }
-        internal ReactivePropertySlim<string> SelectedNameSpace { get; }
+        internal ReactiveCollection<OpenShiftMasterModel> Masters;
+        internal ReactiveProperty<OpenShiftMasterModel> SelectedMaster;
+
+        internal ReadOnlyReactiveCollection<string> Projects;
+        internal ReactiveProperty<string> SelectedProject;
+
         internal ReactivePropertySlim<string> Name { get; }
         internal ReactivePropertySlim<string> Host { get; }
         internal ReactivePropertySlim<string> MemoryLimit { get; }
@@ -38,24 +61,54 @@ namespace OpenShiftForVisualStudio.Vsix.Models
                 return true;
             };
 
-            //TODOあとで選択可能に
-            var url = "https://ose3-single-vm.westus2.cloudapp.azure.com:8443";
-            client = new OpenShiftAPIwithKubernetes(new Uri(url), new TokenCredentials("<token>"));
+            Masters = OpenShiftMastersModel.Instance.Masters;
 
-            OpenShiftMasterUrl = new ReactivePropertySlim<string>(url);
+            SelectedMaster = new ReactiveProperty<OpenShiftMasterModel>(Masters.FirstOrDefault());
 
-            //TODO 選択可能に
-            SelectedNameSpace = new ReactivePropertySlim<string>("development");
+            Projects = SelectedMaster
+                .Where(m => !string.IsNullOrWhiteSpace(m.MasterUrl.Value) && !string.IsNullOrWhiteSpace(m.Token.Value))
+                .Select(m =>
+                {
+                    //TODO あとでasync
+                    var client = new OpenShiftAPIwithKubernetes(new Uri(m.MasterUrl.Value), new TokenCredentials(m.Token.Value));
+                    var projects = client.ListProject();
+                    return projects.Items.Select(p => p.Metadata.Name).ToList();
+                })
+                .SelectMany(x => x)
+               // .SelectMany(t => t.Result)
+                .ToReadOnlyReactiveCollection();
+
+            SelectedProject = new ReactiveProperty<string>();
+
             Name = new ReactivePropertySlim<string>("vssdk-test");
+
+            string branch = "";
+            string gitUrl = "https://github.com/redhat-developer/s2i-dotnetcore-ex.git";
+            string startupProject = "app";
+            try
+            {
+                //DTE.ActiveSolutionProjects?.Cast<Project>().FirstOrDefault()?.FullName
+                var project = DTE.SelectedItems.Item(1).Project;
+                startupProject = project.Name;
+                var git = new GitAnalysis(project.FullName);
+                if (git.IsDiscoveredGitRepository)
+                {
+                    branch = git.BranchName;
+                    gitUrl = git.RemoteURL;
+                }
+            }
+            catch (Exception ex)
+            {
+                //Debug.Write(ex.ToString());
+            }
+            
+            MemoryLimit = new ReactivePropertySlim<string>("512Mi");
+            GitSource = new ReactivePropertySlim<string>(gitUrl); 
+            GitRef = new ReactivePropertySlim<string>(branch);
 
             //デフォルト値はNameから自動生成
             Host = new ReactivePropertySlim<string>("vssdk-test.52.175.232.56.xip.io");
-
-
-            MemoryLimit = new ReactivePropertySlim<string>("512Mi");
-            GitSource = new ReactivePropertySlim<string>("https://github.com/redhat-developer/s2i-dotnetcore-ex.git"); 
-            GitRef = new ReactivePropertySlim<string>("dotnetcore-2.0");
-            StartupProject = new ReactivePropertySlim<string>("app");
+            StartupProject = new ReactivePropertySlim<string>(startupProject);
         }
 
         public void StartDeploy()
@@ -67,9 +120,15 @@ namespace OpenShiftForVisualStudio.Vsix.Models
         {
             try
             {
+                var master = SelectedMaster.Value;
+                //var url = "https://ose3-single-vm.westus2.cloudapp.azure.com:8443";
+                var url = master.MasterUrl.Value;
+                client = new OpenShiftAPIwithKubernetes(new Uri(url), new TokenCredentials(master.Token.Value));
+                
                 IsDeploying.Value = true;
                 Message.Value = "";
-                var @namespace = SelectedNameSpace.Value;
+
+                var @namespace = SelectedProject.Value;
                 var name = Name.Value;
                 var host = Host.Value;
                 var memoeryLimit = MemoryLimit.Value;
@@ -97,7 +156,7 @@ namespace OpenShiftForVisualStudio.Vsix.Models
                             Weight = 100
                         }
                     },
-                    Status = new Comgithubopenshiftapiroutev1RouteStatus(new Comgithubopenshiftapiroutev1RouteIngress[] { })
+                    Status = new Comgithubopenshiftapiroutev1RouteStatus(new Comgithubopenshiftapiroutev1RouteIngress[0])
                 }, @namespace);
                 Message.Value += "Created Route.\r\n";
 

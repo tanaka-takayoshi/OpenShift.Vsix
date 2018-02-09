@@ -63,7 +63,7 @@
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidOpenShiftVSPackageCmdSet" id="cmdidOpenShiftProjectReload" priority="0x0101" type="Button">
         <Parent guid="guidOpenShiftVSPackageCmdSet" id="ToolbarGroupID" />
-        <Icon guid="guidImages" id="bmpPicSearch" />
+        <!--<Icon guid="guidImages" id="bmpPicSearch" />-->
         <Strings>
           <CommandName>cmdidOpenShiftProjectReload</CommandName>
           <ButtonText>Reload</ButtonText>
@@ -78,7 +78,7 @@
       </Button>
       <Button guid="guidOpenShiftVSPackageCmdSet1" id="cmdidDeployToOpenShiftCommand" priority="0x0100" type="Button">
         <Parent guid="guidOpenShiftVSPackageCmdSet1" id="MyMenuGroup" />
-        <Icon guid="guidImages1" id="bmpPic1" />
+        <!--<Icon guid="guidImages1" id="bmpPic1" />-->
         <Strings>
           <ButtonText>Deploy to OpenShift</ButtonText>
         </Strings>

@@ -55,12 +55,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DeployToOpenShiftCommand.cs" />
+    <Compile Include="GitAnalysis.cs" />
     <Compile Include="Models\DeployToOpenShiftModel.cs" />
+    <Compile Include="Models\OpenShiftMastersModel.cs" />
     <Compile Include="OpenShiftVSPackage.cs" />
+    <Compile Include="Options\OpenShiftMasterEndpointSetting.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\DeployToOpenShiftViewModel.cs" />
+    <Compile Include="ViewModels\OpenShiftExplorerViewModel.cs" />
+    <Compile Include="ViewModels\OpenShiftMasterEndpointSettingsViewModel.cs" />
     <Compile Include="Views\DeployToOpenShiftWindow.xaml.cs">
       <DependentUpon>DeployToOpenShiftWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OpenShiftMasterEndpointSettingsView.xaml.cs">
+      <DependentUpon>OpenShiftMasterEndpointSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OpenShiftProjectWindow.cs" />
     <Compile Include="Views\OpenShiftProjectWindowCommand.cs" />
@@ -189,8 +199,10 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Design" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.0.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
@@ -230,6 +242,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -240,6 +253,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\DeployToOpenShiftWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OpenShiftMasterEndpointSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
