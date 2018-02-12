@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="OpenShiftForVisualStudio.Vsix.f1b7b098-b5ae-4247-bb50-0956f735e1a6" Version="1.0" Language="en-US" Publisher="Takayoshi Tanaka" />
+    <Identity Id="OpenShiftForVisualStudio.Vsix.f1b7b098-b5ae-4247-bb50-0956f735e1a6" Version="0.1" Language="en-US" Publisher="Takayoshi Tanaka" />
     <DisplayName>OpenShiftForVisualStudio.Vsix</DisplayName>
-    <Description>Empty VSIX Project.</Description>
+    <Description xml:space="preserve">OpenShift Tools for Visual Studio</Description>
+    <Tags>OpenShift</Tags>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0]" />

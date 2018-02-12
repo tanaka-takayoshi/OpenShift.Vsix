@@ -3,12 +3,15 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
+using OpenShiftForVisualStudio.Vsix.Options;
 
 namespace OpenShiftForVisualStudio.Vsix
 {
@@ -35,6 +38,8 @@ namespace OpenShiftForVisualStudio.Vsix
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(OpenShiftForVisualStudio.Vsix.Views.OpenShiftProjectWindow))]
+    //[ProvideProfile(typeof(AvaloniaDesignerGeneralPage), "Avalonia designer", "Avalonia Designer Options", 289, 289, true, DescriptionResourceID = 114)]
+    [ProvideOptionPage(typeof(OpenShiftMasterEndpointSetting), "OpenShift Tools for Visual Studio", "Master endpoints", 0, 0, true)]
     public sealed class OpenShiftVSPackage : Package
     {
         /// <summary>
@@ -63,8 +68,61 @@ namespace OpenShiftForVisualStudio.Vsix
         {
             base.Initialize();
             OpenShiftForVisualStudio.Vsix.Views.OpenShiftProjectWindowCommand.Initialize(this);
+            OpenShiftForVisualStudio.Vsix.DeployToOpenShiftCommand.Initialize(this);
         }
 
         #endregion
+        
+        static OpenShiftVSPackage()
+        {
+            RedirectAssembly("System.Reactive.Core", new Version(3, 0, 3000, 0), "94bc3704cddfc263");
+            RedirectAssembly("System.Reactive.Interfaces", new Version(3, 0, 1000, 0), "94bc3704cddfc263");
+            //RedirectAssembly("Newtonsoft.Json", new Version(10, 0, 0, 0), "30ad4fe6b2a6aeed");
+            //RedirectAssembly("System.Reactive.Core", new Version(4, 1, 1, 2), "b03f5f7f11d50a3a");
+        }
+
+        public static void RedirectAssembly(string shortName, Version targetVersion, string publicKeyToken)
+        {
+            ResolveEventHandler handler = null;
+
+            handler = (sender, args) => {
+                // Use latest strong name & version when trying to load SDK assemblies
+                var requestedAssembly = new AssemblyName(args.Name);
+                if (requestedAssembly.Name != shortName)
+                    return null;
+
+                Debug.WriteLine($"Redirecting assembly load of {args.Name}, loaded by {args.RequestingAssembly?.FullName ?? "(unknown)"}");
+                
+                if (requestedAssembly.Version > targetVersion)
+                {
+                    Debug.WriteLine($"Request assemby's version {requestedAssembly.Version} is higher than the target version {targetVersion}. Stop to load the target assembly.");
+                    return null;
+                }
+                requestedAssembly.Version = targetVersion;
+                requestedAssembly.SetPublicKeyToken(new AssemblyName($"x, PublicKeyToken={publicKeyToken}").GetPublicKeyToken());
+                requestedAssembly.CultureInfo = CultureInfo.InvariantCulture;
+
+                AppDomain.CurrentDomain.AssemblyResolve -= handler;
+
+                return Assembly.Load(requestedAssembly);
+            };
+            AppDomain.CurrentDomain.AssemblyResolve += handler;
+        }
     }
+
+    public static class TaskEx
+    {
+        /// <summary>
+        /// 投げっぱなしにする場合は、これを呼ぶことでコンパイラの警告の抑制と、例外発生時のロギングを行います。
+        /// </summary>
+        public static void FireAndForget(this System.Threading.Tasks.Task task)
+        {
+            task.ContinueWith(x =>
+            {
+                Debug.Write(x.Exception);
+                //logger.ErrorException("TaskUnhandled", x.Exception);
+            }, TaskContinuationOptions.OnlyOnFaulted);
+        }
+    }
+    
 }

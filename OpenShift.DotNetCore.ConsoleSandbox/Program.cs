@@ -13,7 +13,7 @@ namespace OpenShift.DotNetCore.ConsoleSandbox
             {
                 ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
             };
-            var client = new OpenShiftAPIwithKubernetes(new Uri("https://ose3-single-vm.westus2.cloudapp.azure.com:8443"), new TokenCredentials("zXg4eone96E9tLrZCDdATlTJhcITXxcSAxV83TdUhPU"), handler);
+            var client = new OpenShiftAPIwithKubernetes(new Uri("https://ose3-single-vm.westus2.cloudapp.azure.com:8443"), new TokenCredentials("<token>"), handler);
             var pods = client.ListCoreV1NamespacedPodAsync("fukuokanetconf").GetAwaiter().GetResult();
             foreach (var pod in pods.Items)
             {
