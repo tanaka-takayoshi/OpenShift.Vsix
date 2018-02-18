@@ -26,17 +26,20 @@ namespace OpenShiftForVisualStudio.Vsix.ViewModels
 
         public ReactiveCommand RemoveItemCommand { get; }
 
+        public ReadOnlyReactivePropertySlim<bool> IsSelected { get; }
+
         public OpenShiftMasterEndpointSettingsViewModel()
         {
             model = OpenShiftMastersModel.Instance;
             Masters = model.Masters.ToReadOnlyReactiveCollection(m => new OpenShiftMasterViewModel(m));
 
             AddItemCommand = new ReactiveCommand()
-                .WithSubscribe(() =>
+                .WithSubscribe(async () =>
                 {
                     var newMaster = new OpenShiftMasterModel();
                     model.AddItem(newMaster);
-                    SelectedItem.Value = Masters.FirstOrDefault(m => m.Model == newMaster);
+                    var added = await Masters.ObserveAddChanged().FirstAsync();
+                    SelectedItem.Value = added;
                 })
                 .AddTo(Disposable);
             
@@ -47,6 +50,10 @@ namespace OpenShiftForVisualStudio.Vsix.ViewModels
                 .AddTo(Disposable);
 
             CanSave = Masters.Select(m => m.HasErrors).CombineLatestValuesAreAllFalse().ToReactiveProperty();
+
+            IsSelected = SelectedItem
+                .Select(item => item != null)
+                .ToReadOnlyReactivePropertySlim(false);
         }
 
         public async Task SaveAsync()
@@ -81,12 +88,15 @@ namespace OpenShiftForVisualStudio.Vsix.ViewModels
         [Required]
         public ReactiveProperty<string> Token { get; }
 
+        public ReactiveCommand LoadFromLoginCommand { get; }
+        public ReactiveProperty<string> LoginCommand { get; } = new ReactiveProperty<string>();
+
         private ReactiveProperty<bool> hasErrors;
         public ReactiveProperty<bool> HasErrors =>
             hasErrors ?? (hasErrors = Observable.CombineLatest(
-                Name.ObserveHasErrors,
-                Endpoint.ObserveHasErrors,
-                Token.ObserveHasErrors)
+                Name.ObserveHasErrors.Throttle(TimeSpan.FromMilliseconds(500)),
+                Endpoint.ObserveHasErrors.Throttle(TimeSpan.FromMilliseconds(500)),
+                Token.ObserveHasErrors.Throttle(TimeSpan.FromMilliseconds(500)))
                 .Select(x => x.Any(y => y))
                 .ToReactiveProperty());
 
@@ -109,6 +119,37 @@ namespace OpenShiftForVisualStudio.Vsix.ViewModels
                 .ToReactivePropertyAsSynchronized(x => x.Value)
                 .SetValidateAttribute(() => Token)
                 .AddTo(Disposable);
+
+            LoadFromLoginCommand = LoginCommand
+                .Select(Parse)
+                .Select(x => x.succeeded)
+                .ToReactiveCommand(false)
+                .WithSubscribe(() =>
+                {
+                    var command = LoginCommand.Value;
+                    var (succeeded, url, token) = Parse(command);
+                    if (succeeded)
+                    {
+                        Endpoint.Value = url;
+                        Token.Value = token;
+                    }
+                }).AddTo(Disposable);
+        }
+
+        private static (bool succeeded, string url, string token) Parse(string command)
+        {
+            var elemetns = command?.Split(' ');
+            if ((elemetns?.Length ?? 0) < 4 || elemetns[0] != "oc" || elemetns[1] != "login")
+                return (false, null, null);
+            if (elemetns[3].StartsWith("--token="))
+            {
+                return (true, elemetns[2], elemetns[3].Remove(0, "--token=".Length));
+            }
+            if (elemetns[3] == ("--token") && elemetns.Length >= 5)
+            {
+                return (true, elemetns[2], elemetns[4]);
+            }
+            return (false, null, null);
         }
     }
 }

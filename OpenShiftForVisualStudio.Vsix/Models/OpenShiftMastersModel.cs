@@ -83,7 +83,7 @@ namespace OpenShiftForVisualStudio.Vsix.Models
                     MasterUrl = m.MasterUrl.Value,
                     Token = m.Token.Value
                 }).ToArray();
-
+                
                 var jsonString = JsonConvert.SerializeObject(masters);
                 writableSettingsStore.SetString(CollectionPath, PropertyName, jsonString);
             }
