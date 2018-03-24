@@ -34,8 +34,9 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" IsEnabled="{Binding SelectedItem.IsSelected.Value, ElementName=masterEndpointList, Mode=OneWay}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -45,13 +46,24 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Label Margin="5" Content="Name:"/>
-            <TextBox Margin="5" Grid.Column="1" Text="{Binding SelectedItem.Name.Value, ElementName=masterEndpointList}"/>
+            <TextBox Margin="5" Grid.Column="1" Text="{Binding SelectedItem.Name.Value, ElementName=masterEndpointList, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Label Margin="5" Grid.Row="1" Content="endpoint:"/>
-            <TextBox Margin="5" Grid.Row="1" Grid.Column="1" Text="{Binding SelectedItem.Endpoint.Value, ElementName=masterEndpointList}"/>
+            <TextBox Margin="5" Grid.Row="1" Grid.Column="1" Text="{Binding SelectedItem.Endpoint.Value, ElementName=masterEndpointList, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Label Margin="5" Grid.Row="2" Content="Token:"/>
-            <TextBox Margin="5" Grid.Row="2" Grid.Column="1" Text="{Binding SelectedItem.Token.Value, ElementName=masterEndpointList}"/>
+            <TextBox Margin="5" Grid.Row="2" Grid.Column="1" Text="{Binding SelectedItem.Token.Value, ElementName=masterEndpointList, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <Label Margin="5" Grid.Row="3" Content="(oc login)"/>
+            <Grid Grid.Row="3" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox Margin="5" Text="{Binding SelectedItem.LoginCommand.Value, ElementName=masterEndpointList, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Margin="5" Grid.Column="1" Content="Parse" Command="{Binding SelectedItem.LoadFromLoginCommand, ElementName=masterEndpointList}"/>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>
